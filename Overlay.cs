@@ -102,7 +102,7 @@ namespace CSGO_External_Overlay
             ResizeWindow(gfx);
 
             // 绘制边框
-            gfx.DrawRectangle(_brushes["white"], 0, 0, _window.Width, _window.Height, 0.7f);
+            //gfx.DrawRectangle(_brushes["white"], 0, 0, _window.Width, _window.Height, 0.7f);
 
             // 绘制帧数
             gfx.DrawText(_fonts["Microsoft YaHei"], 12, _brushes["blue"], 10, _window.Height / 3,
@@ -128,23 +128,23 @@ namespace CSGO_External_Overlay
             for (int i = 0; i < maxPlayer; i++)
             {
                 int entity = Memory.ReadMemory<int>(csgo.server + 0xA7F7E4 + i * 0x18);
-                if (entity <= 0) continue;
+
                 int ent_health = Memory.ReadMemory<int>(entity + 0x230);
                 if (ent_health <= 0) continue;
                 int entity_team_id = Memory.ReadMemory<int>(entity + 0x314);
                 if (entity_team_id == player_team) continue;
 
-                Vector3 v3PedPos = new Vector3
+                Vector3 v3PlayerPos = new Vector3
                 {
                     X = Memory.ReadMemory<float>(entity + 0x1DC),
                     Y = Memory.ReadMemory<float>(entity + 0x1DC + 0x4),
                     Z = Memory.ReadMemory<float>(entity + 0x1DC + 0x8)
                 };
 
-                Vector2 v2PedPos = WorldToScreen(v3PedPos);
-                Vector2 v2BoxWH = GetBoxWH(gfx, v3PedPos, 75.0f, 0.0f);
+                Vector2 v2PlayerPos = WorldToScreen(v3PlayerPos);
+                Vector2 v2BoxWH = GetBoxWH(gfx, v3PlayerPos, 75.0f, 0.0f);
 
-                if (!IsNullVector2(v2PedPos))
+                if (!IsNullVector2(v2PlayerPos))
                 {
                     float box_height = v2BoxWH.X;
                     float box_wight = v2BoxWH.Y;
@@ -154,8 +154,8 @@ namespace CSGO_External_Overlay
 
                     // 2D方框
                     gfx.DrawRectangle(_brushes["white"], Rectangle.Create(
-                        v2PedPos.X - box_wight / 2,
-                        v2PedPos.Y - box_height,
+                        v2PlayerPos.X - box_wight / 2,
+                        v2PlayerPos.Y - box_height,
                         box_wight,
                         box_height), 0.7f);
 
@@ -163,26 +163,27 @@ namespace CSGO_External_Overlay
                     gfx.DrawLine(_brushes["white"],
                         csgo.windowData.Width / 2,
                         0,
-                        v2PedPos.X,
-                        v2PedPos.Y - box_height, 0.7f);
+                        v2PlayerPos.X,
+                        v2PlayerPos.Y - box_height, 0.7f);
 
                     // 血条
                     gfx.DrawRectangle(_brushes["white"], Rectangle.Create(
-                        v2PedPos.X - box_wight / 2 - box_wight / 8,
-                        v2PedPos.Y,
+                        v2PlayerPos.X - box_wight / 2 - box_wight / 8,
+                        v2PlayerPos.Y,
                         box_wight / 10,
                         box_height * -1.0f), 0.7f);
                     gfx.FillRectangle(_brushes["green"], Rectangle.Create(
-                        v2PedPos.X - box_wight / 2 - box_wight / 8,
-                        v2PedPos.Y,
+                        v2PlayerPos.X - box_wight / 2 - box_wight / 8,
+                        v2PlayerPos.Y,
                         box_wight / 10,
                         box_height * ent_health / 100 * -1.0f));
 
                     // 血量
                     gfx.DrawText(_fonts["Microsoft YaHei"], 8, _brushes["white"],
-                        v2PedPos.X - box_wight / 2,
-                        v2PedPos.Y + box_wight / 8 - box_wight / 10,
-                        $"HP: {ent_health:0}/{100}\n");
+                        v2PlayerPos.X - box_wight / 2,
+                        v2PlayerPos.Y + box_wight / 8 - box_wight / 10,
+                        $"HP: {ent_health:0}/{100}\n" +
+                        $"ID: {i}");
                 }
 
                 //Vector2 v2Bone0 = WorldToScreen(GetBonePosition(entity, 8));

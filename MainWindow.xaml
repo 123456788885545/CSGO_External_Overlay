@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" Name="Window_Main" WindowStartupLocation="CenterScreen"
-        Title="CSGO External Overlay" Height="400" Width="500" MinWidth="500"
+        Title="CSGO External Overlay By CrazyZhang" Height="400" Width="500" MinWidth="500"
         Closing="Window_Main_Closing">
 
     <Grid>
@@ -31,7 +31,7 @@
                 </Image>
                 <GroupBox Header="免责声明" Margin="0,5,0,0">
                     <TextBlock Margin="5" TextWrapping="WrapWithOverflow">
-                        本程序适用于7Launcher单机CSGO客户端，仅供学习研究，请勿用于Steam CSGO及其他平台
+                        本程序适用于7Launcher单机CSGO客户端，仅供学习研究，请勿用于Steam CSGO及其他平台。USE AT YOUR OWN RISK
                     </TextBlock>
                 </GroupBox>
             </StackPanel>
