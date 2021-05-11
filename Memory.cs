@@ -29,7 +29,7 @@ namespace CSGO_External_Overlay
             m_pProcessHandle = Win32API.OpenProcess(Win32API.PROCESS_VM_READ | Win32API.PROCESS_VM_WRITE | Win32API.PROCESS_VM_OPERATION, false, m_Process.Id);
         }
 
-        public static void CloseProcess()
+        public static void CloseHandle()
         {
             Win32API.CloseHandle(m_pProcessHandle);
         }
