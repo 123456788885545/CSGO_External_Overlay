@@ -121,18 +121,17 @@ namespace CSGO_External_Overlay
             gfx.DrawText(_fonts["Microsoft YaHei"], 12.0f, _brushes["blue"], 10, _window.Height / 2,
                 $"鼠标Y：{lViewAngles_Y}\n鼠标X：{lViewAngles_X}");
 
-            int maxPlayer = Memory.ReadMemory<int>(csgo.client_state + Offsets.signatures.dwClientState_MaxPlayer);
-            int local_player = Memory.ReadMemory<int>(csgo.client + Offsets.signatures.dwLocalPlayer);
-            int player_team = Memory.ReadMemory<int>(local_player + Offsets.netvars.m_iTeamNum);
+            int player_count = Memory.ReadMemory<int>(csgo.server + 0xB28950);
+            int player_team = Memory.ReadMemory<int>(Memory.ReadMemory<int>(csgo.server + 0xA7F7E4) + 0x314);
 
-            for (int i = 0; i < maxPlayer; i++)
+            for (int i = 1; i <= player_count; i++)
             {
                 int entity = Memory.ReadMemory<int>(csgo.server + 0xA7F7E4 + i * 0x18);
 
-                int ent_health = Memory.ReadMemory<int>(entity + 0x230);
-                if (ent_health <= 0) continue;
-                int entity_team_id = Memory.ReadMemory<int>(entity + 0x314);
-                if (entity_team_id == player_team) continue;
+                int entity_health = Memory.ReadMemory<int>(entity + 0x230);
+                if (entity_health <= 0) continue;
+                int entity_team = Memory.ReadMemory<int>(entity + 0x314);
+                if (entity_team == player_team) continue;
 
                 Vector3 v3PlayerPos = new Vector3
                 {
@@ -176,13 +175,13 @@ namespace CSGO_External_Overlay
                         v2PlayerPos.X - box_wight / 2 - box_wight / 8,
                         v2PlayerPos.Y,
                         box_wight / 10,
-                        box_height * ent_health / 100 * -1.0f));
+                        box_height * entity_health / 100 * -1.0f));
 
                     // 血量
                     gfx.DrawText(_fonts["Microsoft YaHei"], 8, _brushes["white"],
                         v2PlayerPos.X - box_wight / 2,
                         v2PlayerPos.Y + box_wight / 8 - box_wight / 10,
-                        $"HP: {ent_health:0}/{100}\n" +
+                        $"HP: {entity_health:0}/{100}\n" +
                         $"ID: {i}");
                 }
 
