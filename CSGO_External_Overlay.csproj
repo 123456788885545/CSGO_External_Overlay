@@ -117,7 +117,7 @@
     </ApplicationDefinition>
     <Compile Include="MyUtil.cs" />
     <Compile Include="Overlay.cs" />
-    <Compile Include="Win32API.cs" />
+    <Compile Include="WinAPI.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -26,6 +26,10 @@ namespace CSGO_External_Overlay
             public int engine;
 
             public int client_state;
+
+            public float aimbot_distance;
+            public float aimbot_min_distance;
+            public Vector3 aimbot_Angle;
         }
         private GameInfo csgo;
 
@@ -112,6 +116,8 @@ namespace CSGO_External_Overlay
             /////////////////   用户自定义绘制区域  /////////////////
             ///////////////////////////////////////////////////////
 
+            csgo.aimbot_min_distance = csgo.windowData.Height / 2;
+
             csgo.client_state = Memory.ReadMemory<int>(csgo.engine + Offsets.signatures.dwClientState);
 
             float lViewAngles_Y = Memory.ReadMemory<float>(csgo.client_state + Offsets.signatures.dwClientState_ViewAngles);
@@ -123,6 +129,8 @@ namespace CSGO_External_Overlay
 
             int player_count = Memory.ReadMemory<int>(csgo.server + 0xB28950);
             int player_team = Memory.ReadMemory<int>(Memory.ReadMemory<int>(csgo.server + 0xA7F7E4) + 0x314);
+
+            Vector3 player_Pos = GetBonePosition(Memory.ReadMemory<int>(csgo.client + Offsets.signatures.dwEntityList), 8);
 
             for (int i = 1; i <= player_count; i++)
             {
@@ -201,15 +209,29 @@ namespace CSGO_External_Overlay
                 // buggly | https://www.unknowncheats.me/forum/counterstrike-global-offensive/218227-skeleton-esp-bone-ids.html
                 // skeleton esp | Bone Ids : https://www.unknowncheats.me/forum/attachments/counterstrike-global-offensive/13413d1480413236-csgo-bone-id-8f0bb9a93378477388dee312b2fad4ca-png
 
-                Vector2 v2Bone1 = WorldToScreen(GetBonePosition(client_entity, 2));
-                Vector2 v2Bone0 = WorldToScreen(GetBonePosition(client_entity, 1));
+                Vector2 v2Bone2 = WorldToScreen(GetBonePosition(client_entity, 2));
+                Vector2 v2Bone1 = WorldToScreen(GetBonePosition(client_entity, 1));
 
-                if (!IsNullVector2(v2Bone0) && !IsNullVector2(v2Bone1))
+                if (!IsNullVector2(v2Bone1) && !IsNullVector2(v2Bone2))
                 {
-                    float BoxHeight = v2Bone0.Y - v2Bone1.Y;
+                    float BoxHeight = v2Bone1.Y - v2Bone2.Y;
                     float BoxWidth = BoxHeight / 2;
 
-                    gfx.DrawRectangle(_brushes["red"], v2Bone0.X - BoxWidth / 2, v2Bone0.Y, v2Bone0.X - BoxWidth / 2 + BoxWidth, v2Bone0.Y - BoxHeight, 1);
+                    gfx.DrawRectangle(_brushes["red"], v2Bone1.X - BoxWidth / 2, v2Bone1.Y, v2Bone1.X - BoxWidth / 2 + BoxWidth, v2Bone1.Y - BoxHeight, 1);
+                }
+
+                Vector3 v3Bone8 = GetBonePosition(client_entity, 8);
+                Vector2 v2Bone8 = WorldToScreen(v3Bone8);
+
+                if (!IsNullVector2(v2Bone8))
+                {
+                    csgo.aimbot_distance = (float)Math.Sqrt(Math.Pow(v2Bone8.X - csgo.windowData.Width / 2, 2) + Math.Pow(v2Bone8.Y - csgo.windowData.Height / 2, 2));
+
+                    if (csgo.aimbot_distance < csgo.aimbot_min_distance)
+                    {
+                        csgo.aimbot_min_distance = csgo.aimbot_distance;
+                        csgo.aimbot_Angle = ClampAngle(CalcAngle(player_Pos, v3Bone8));
+                    }
                 }
 
                 DrawBone(gfx, 8, 7, client_entity);
@@ -230,6 +252,12 @@ namespace CSGO_External_Overlay
                 DrawBone(gfx, 3, 67, client_entity);
                 DrawBone(gfx, 67, 68, client_entity);
             }
+
+            if (Convert.ToBoolean(WinAPI.GetAsyncKeyState(0xA0) & 0x8000))
+            {
+                Memory.WriteMemory<float>(Memory.ReadMemory<int>(csgo.engine + 0x589FE4) + 0x4D90, csgo.aimbot_Angle.X);
+                Memory.WriteMemory<float>(Memory.ReadMemory<int>(csgo.engine + 0x589FE4) + 0x4D94, csgo.aimbot_Angle.Y);
+            }
         }
 
         private void ResizeWindow(Graphics gfx)
@@ -243,7 +271,7 @@ namespace CSGO_External_Overlay
             gfx.Resize(_window.Width, _window.Height);
         }
 
-        public void DrawBone(Graphics gfx, int bone0, int bone1, int entity)
+        private void DrawBone(Graphics gfx, int bone0, int bone1, int entity)
         {
             Vector2 v2Bone0 = WorldToScreen(GetBonePosition(entity, bone0));
             Vector2 v2Bone1 = WorldToScreen(GetBonePosition(entity, bone1));
@@ -254,7 +282,7 @@ namespace CSGO_External_Overlay
             }
         }
 
-        public Vector3 GetBonePosition(int entity, int BoneID)
+        private Vector3 GetBonePosition(int entity, int BoneID)
         {
             int boneMatrix = Memory.ReadMemory<int>(entity + Offsets.netvars.m_dwBoneMatrix);
             Vector3 head_pos;
@@ -264,14 +292,14 @@ namespace CSGO_External_Overlay
             return head_pos;
         }
 
-        public bool IsNullVector2(Vector2 vector)
+        private bool IsNullVector2(Vector2 vector)
         {
             if (vector == new Vector2(0, 0))
                 return true;
             return false;
         }
 
-        public Vector2 WorldToScreen(Vector3 target)
+        private Vector2 WorldToScreen(Vector3 target)
         {
             Vector2 _worldToScreenPos;
             Vector3 _camera;
@@ -295,7 +323,7 @@ namespace CSGO_External_Overlay
             return _worldToScreenPos;
         }
 
-        public Vector2 GetBoxWH(Vector3 target, float topOffset, float bottomOffset)
+        private Vector2 GetBoxWH(Vector3 target, float topOffset, float bottomOffset)
         {
             Vector2 _worldToScreenPos;
             Vector3 _camera;
@@ -319,6 +347,44 @@ namespace CSGO_External_Overlay
             _worldToScreenPos.Y = _worldToScreenPos.X * 0.5f;
 
             return _worldToScreenPos;
+        }
+
+        private float DegToRad(float deg) { return (float)(deg * (Math.PI / 180f)); }
+        private float RadToDeg(float deg) { return (float)(deg * (180f / Math.PI)); }
+
+        private Vector3 CalcAngle(Vector3 src, Vector3 dst)
+        {
+            Vector3 ret = new Vector3();
+            Vector3 vDelta = src - dst;
+            float fHyp = (float)Math.Sqrt((vDelta.X * vDelta.X) + (vDelta.Y * vDelta.Y));
+
+            ret.X = RadToDeg((float)Math.Atan(vDelta.Z / fHyp));
+            ret.Y = RadToDeg((float)Math.Atan(vDelta.Y / vDelta.X));
+
+            if (vDelta.X >= 0.0f)
+                ret.Y += 180.0f;
+            return ret;
+        }
+
+        private Vector3 ClampAngle(Vector3 qaAng)
+        {
+
+            if (qaAng.X > 89.0f && qaAng.X <= 180.0f)
+                qaAng.X = 89.0f;
+
+            while (qaAng.X > 180.0f)
+                qaAng.X = qaAng.X - 360.0f;
+
+            if (qaAng.X < -89.0f)
+                qaAng.X = -89.0f;
+
+            while (qaAng.Y > 180.0f)
+                qaAng.Y = qaAng.Y - 360.0f;
+
+            while (qaAng.Y < -180.0f)
+                qaAng.Y = qaAng.Y + 360.0f;
+
+            return qaAng;
         }
 
         private void _window_DestroyGraphics(object sender, DestroyGraphicsEventArgs e)

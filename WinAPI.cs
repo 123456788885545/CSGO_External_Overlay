@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace CSGO_External_Overlay
 {
-    class Win32API
+    class WinAPI
     {
         public const int PROCESS_VM_READ = 0x0010;
         public const int PROCESS_VM_WRITE = 0x0020;
@@ -24,6 +24,9 @@ namespace CSGO_External_Overlay
 
         [DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr handle);
+
+        [DllImport("User32")]
+        public static extern int GetAsyncKeyState(int vKey);
 
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(IntPtr hProcess, int lpBaseAddress, [In, Out] byte[] lpBuffer, int nsize, out IntPtr lpNumberOfBytesRead);
