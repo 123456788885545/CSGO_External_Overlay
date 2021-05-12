@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" Name="Window_Main" WindowStartupLocation="CenterScreen"
         Title="CSGO External Overlay By CrazyZhang" Height="400" Width="500" MinWidth="500"
-        Closing="Window_Main_Closing">
+        Closing="Window_Main_Closing" Icon="csgo-icon.ico">
 
     <Grid>
         <DockPanel LastChildFill="True">

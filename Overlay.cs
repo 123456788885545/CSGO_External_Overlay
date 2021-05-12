@@ -105,8 +105,8 @@ namespace CSGO_External_Overlay
             //gfx.DrawRectangle(_brushes["white"], 0, 0, _window.Width, _window.Height, 0.7f);
 
             // 绘制帧数
-            gfx.DrawText(_fonts["Microsoft YaHei"], 12, _brushes["blue"], 10, _window.Height / 3,
-                $"FPS：{gfx.FPS}\nFrameTime：{e.FrameTime}\nFrameCount：{e.FrameCount}\nDeltaTime：{e.DeltaTime}\n\n");
+            gfx.DrawText(_fonts["Microsoft YaHei"], 12, _brushes["blue"], 10, _window.Height / 2.5f,
+                $"FPS：{gfx.FPS}\nFrameTime：{e.FrameTime}\nFrameCount：{e.FrameCount}\nDeltaTime：{e.DeltaTime}");
 
             ///////////////////////////////////////////////////////
             /////////////////   用户自定义绘制区域  /////////////////
