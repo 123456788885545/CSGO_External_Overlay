@@ -141,7 +141,7 @@ namespace CSGO_External_Overlay
                 };
 
                 Vector2 server_v2PlayerPos = WorldToScreen(server_v3PlayerPos);
-                Vector2 server_v2BoxWH = GetBoxWH(gfx, server_v3PlayerPos, 75.0f, 0.0f);
+                Vector2 server_v2BoxWH = GetBoxWH(server_v3PlayerPos, 75.0f, 0.0f);
 
                 if (!IsNullVector2(server_v2PlayerPos))
                 {
@@ -295,7 +295,7 @@ namespace CSGO_External_Overlay
             return _worldToScreenPos;
         }
 
-        public Vector2 GetBoxWH(Graphics gfx, Vector3 target, float topOffset, float bottomOffset)
+        public Vector2 GetBoxWH(Vector3 target, float topOffset, float bottomOffset)
         {
             Vector2 _worldToScreenPos;
             Vector3 _camera;
