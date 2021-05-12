@@ -25,14 +25,14 @@ namespace CSGO_External_Overlay
         [DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr handle);
 
-        [DllImport("User32")]
-        public static extern int GetAsyncKeyState(int vKey);
-
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(IntPtr hProcess, int lpBaseAddress, [In, Out] byte[] lpBuffer, int nsize, out IntPtr lpNumberOfBytesRead);
 
         [DllImport("kernel32.dll")]
         public static extern bool WriteProcessMemory(IntPtr hProcess, int lpBaseAddress, [In, Out] byte[] lpBuffer, int nsize, out IntPtr lpNumberOfBytesWritten);
+
+        [DllImport("user32.dll")]
+        public static extern int GetAsyncKeyState(int vKey);
     }
 
     [StructLayout(LayoutKind.Sequential)]

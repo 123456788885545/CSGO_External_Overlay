@@ -116,7 +116,7 @@ namespace CSGO_External_Overlay
             /////////////////   用户自定义绘制区域  /////////////////
             ///////////////////////////////////////////////////////
 
-            csgo.aimbot_min_distance = csgo.windowData.Height / 2;
+            csgo.aimbot_min_distance = 8848;
 
             csgo.client_state = Memory.ReadMemory<int>(csgo.engine + Offsets.signatures.dwClientState);
 
@@ -253,7 +253,7 @@ namespace CSGO_External_Overlay
                 DrawBone(gfx, 67, 68, client_entity);
             }
 
-            if (Convert.ToBoolean(WinAPI.GetAsyncKeyState(0xA0) & 0x8000))
+            if (Convert.ToBoolean(WinAPI.GetAsyncKeyState(0xA0) & 0x8000) && csgo.aimbot_min_distance != 8848)
             {
                 Memory.WriteMemory<float>(Memory.ReadMemory<int>(csgo.engine + 0x589FE4) + 0x4D90, csgo.aimbot_Angle.X);
                 Memory.WriteMemory<float>(Memory.ReadMemory<int>(csgo.engine + 0x589FE4) + 0x4D94, csgo.aimbot_Angle.Y);
